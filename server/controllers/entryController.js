@@ -18,12 +18,25 @@ exports.addEntry = async (req, res) => {
 };
 
 exports.getDueEntries = async (req, res) => {
-    const userId = req.user.userId;
-    const today = new Date().toISOString().split("T")[0];
-  
-    const entries = await Entry.find({ userId, nextReviewDate: { $lte: today } });
-    res.json(entries);
-  };
+  const userId = req.user.userId;
+
+  // Get today's date at midnight UTC
+  const today = new Date();
+  today.setUTCHours(0, 0, 0, 0);
+
+  // Get tomorrow's date at midnight UTC
+  const tomorrow = new Date(today);
+  tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
+
+  // Fetch entries due today
+  const entries = await Entry.find({
+    userId,
+    nextReviewDate: { $gte: today, $lt: tomorrow }
+  });
+
+  res.json(entries);
+};
+
 
   exports.reviewEntry = async (req, res) => {
     const { id } = req.params;
