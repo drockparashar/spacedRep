@@ -3,7 +3,7 @@ const Entry = require("../models/Entry");
 // Add a new learning entry
 exports.addEntry = async (req, res) => {
   const { topic } = req.body;
-  const userId = req.user.id;
+  const userId = req.user.userId;
   const today = new Date();
 
   const entry = new Entry({
@@ -18,7 +18,7 @@ exports.addEntry = async (req, res) => {
 };
 
 exports.getDueEntries = async (req, res) => {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const today = new Date().toISOString().split("T")[0];
   
     const entries = await Entry.find({ userId, nextReviewDate: { $lte: today } });
